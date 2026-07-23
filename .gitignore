@@ -1,0 +1,46 @@
+# Dependencies
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# Virtual env
+.venv/
+venv/
+env/
+
+# Environment
+.env
+!.env.example
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Frontend
+frontend/.next/
+frontend/node_modules/
+
+# Data (keep structure, ignore content)
+backend/data/chroma/
+backend/data/diary/*/
+backend/data/mood/*/
+
+# MyWiki
+wiki/.rag_index.json
+*.spec
+MyWiki.app/
+
+# Obsidian
+.obsidian/
+.obsidian/workspace.json
+
+# Generated
+generated-images/

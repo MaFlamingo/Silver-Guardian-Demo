@@ -1,0 +1,26 @@
+# 银发守护 Silver Guardian v2.0 — 后端依赖
+# ================================================
+# FastAPI + Agent + MCP + 双 RAG 引擎
+
+# Web 框架
+fastapi>=0.109.0
+uvicorn[standard]>=0.25.0
+pydantic>=2.0
+
+# LLM 客户端
+openai>=1.0.0
+
+# RAG — 健康知识库
+chromadb>=0.4.0
+fastembed>=0.3.0
+
+# 🆕 RAG — 个人知识库 (my-wiki BM25 引擎，纯标准库，零额外依赖)
+
+# 语音
+SpeechRecognition>=3.10.0
+
+# MCP 工具
+httpx>=0.25.0
+
+# 工具
+python-dotenv>=1.0.0
