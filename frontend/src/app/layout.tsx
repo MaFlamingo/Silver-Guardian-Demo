@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import NavBar from "@/components/NavBar";
 
 export const metadata: Metadata = {
   title: "银发守护 — 适老化智能助手",
@@ -23,6 +24,10 @@ export default function RootLayout({
             <span className="text-elder-sm opacity-80">AI 智能助手</span>
           </div>
         </header>
+
+        {/* 导航栏 */}
+        <NavBar />
+
         <main className="max-w-4xl mx-auto p-4 md:p-6">
           {children}
         </main>
