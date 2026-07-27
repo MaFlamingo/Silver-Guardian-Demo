@@ -1,17 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
-
-interface MoodRecord {
-  timestamp: string;
-  date: string;
-  mood: string;
-  note?: string;
-  acoustic_mood?: string;
-  acoustic_confidence?: number;
-}
+import { getMoodHistory, recordMood, MoodRecord } from "@/services/api";
 
 export default function MoodPage() {
   const [records, setRecords] = useState<MoodRecord[]>([]);
@@ -30,12 +20,7 @@ export default function MoodPage() {
 
   const loadHistory = async () => {
     try {
-      const res = await fetch(`${API_BASE}/mood/history`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: userId, days: 7 }),
-      });
-      const data = await res.json();
+      const data = await getMoodHistory(userId, 7);
       setRecords(data.records || []);
       setDistribution(data.mood_distribution || {});
       setTrend(data.trend || "");
@@ -47,11 +32,7 @@ export default function MoodPage() {
   const handleRecord = async (mood: string) => {
     setLoading(true);
     try {
-      await fetch(`${API_BASE}/mood/record`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mood, note, user_id: userId }),
-      });
+      await recordMood(userId, mood, note);
       setMessage(`心情「${mood}」已记录 ✅`);
       setNote("");
       loadHistory();
