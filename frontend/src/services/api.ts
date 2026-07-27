@@ -96,6 +96,133 @@ export async function getReminders(userId: string = "default") {
 }
 
 // ============================================================
+// 日记 API
+// ============================================================
+export interface DiaryWriteRequest {
+  user_id: string;
+  content: string;
+  mood?: string;
+  dt?: string;
+}
+
+export interface DiaryEntry {
+  date: string;
+  mood?: string;
+  preview: string;
+  content?: string;
+}
+
+export async function writeDiary(req: DiaryWriteRequest) {
+  const res = await fetch(`${API_BASE}/diary/write`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(req),
+  });
+  if (!res.ok) throw new Error(`Write diary failed: ${res.status}`);
+  return res.json();
+}
+
+export async function readDiary(userId: string, dt: string) {
+  const res = await fetch(`${API_BASE}/diary/read`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ user_id: userId, dt }),
+  });
+  if (!res.ok) throw new Error(`Read diary failed: ${res.status}`);
+  return res.json();
+}
+
+export async function listDiaries(userId: string = "default") {
+  const res = await fetch(`${API_BASE}/diary/list/${userId}`);
+  if (!res.ok) throw new Error(`List diaries failed: ${res.status}`);
+  return res.json();
+}
+
+export async function deleteDiary(userId: string, dt: string) {
+  const res = await fetch(`${API_BASE}/diary/${userId}?dt=${dt}`, {
+    method: "DELETE",
+  });
+  if (!res.ok) throw new Error(`Delete diary failed: ${res.status}`);
+  return res.json();
+}
+
+// ============================================================
+// 心情 API
+// ============================================================
+export interface MoodRecord {
+  timestamp: string;
+  date: string;
+  mood: string;
+  note?: string;
+  acoustic_mood?: string;
+  acoustic_confidence?: number;
+}
+
+export interface MoodHistoryResponse {
+  records: MoodRecord[];
+  mood_distribution: Record<string, number>;
+  trend: string;
+  total: number;
+}
+
+export async function recordMood(userId: string, mood: string, note?: string) {
+  const res = await fetch(`${API_BASE}/mood/record`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ mood, note, user_id: userId }),
+  });
+  if (!res.ok) throw new Error(`Record mood failed: ${res.status}`);
+  return res.json();
+}
+
+export async function getMoodHistory(userId: string, days: number = 7): Promise<MoodHistoryResponse> {
+  const res = await fetch(`${API_BASE}/mood/history`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ user_id: userId, days }),
+  });
+  if (!res.ok) throw new Error(`Get mood history failed: ${res.status}`);
+  return res.json();
+}
+
+export async function analyzeTextMood(text: string) {
+  const res = await fetch(`${API_BASE}/mood/analyze-text`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ text }),
+  });
+  if (!res.ok) throw new Error(`Analyze mood failed: ${res.status}`);
+  return res.json();
+}
+
+// ============================================================
+// 个人知识库 API
+// ============================================================
+export interface KBSearchResult {
+  file: string;
+  title: string;
+  score: number;
+  snippet: string;
+  content: string;
+}
+
+export async function searchKB(query: string, topK: number = 5): Promise<{ query: string; results: KBSearchResult[]; count: number }> {
+  const res = await fetch(`${API_BASE}/kb/search`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ query, top_k: topK }),
+  });
+  if (!res.ok) throw new Error(`KB search failed: ${res.status}`);
+  return res.json();
+}
+
+export async function getKBSummary() {
+  const res = await fetch(`${API_BASE}/kb/summary`);
+  if (!res.ok) throw new Error(`KB summary failed: ${res.status}`);
+  return res.json();
+}
+
+// ============================================================
 // WebSocket 连接
 // ============================================================
 export function createChatWebSocket(
