@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import VoiceInterface from "@/components/VoiceInterface";
 import ImageRecognition from "@/components/ImageRecognition";
 import { healthCheck, HealthStatus } from "@/services/api";
@@ -11,7 +12,6 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<Tab>("voice");
   const [status, setStatus] = useState<HealthStatus | null>(null);
 
-  // 检查后端健康状态
   useEffect(() => {
     healthCheck()
       .then(setStatus)
@@ -39,6 +39,34 @@ export default function Home() {
             ⚠️ 正在连接服务...
           </p>
         )}
+      </div>
+
+      {/* 🆕 快捷功能入口 */}
+      <div className="grid grid-cols-3 gap-3">
+        <Link
+          href="/diary"
+          className="card-elder text-center py-5 hover:shadow-lg hover:border-elder-primary border-2 border-transparent transition-all cursor-pointer block no-underline"
+        >
+          <div className="text-3xl mb-2">📔</div>
+          <div className="text-elder-base font-bold text-gray-800">写日记</div>
+          <div className="text-elder-sm text-elder-muted mt-1">记录每一天</div>
+        </Link>
+        <Link
+          href="/mood"
+          className="card-elder text-center py-5 hover:shadow-lg hover:border-elder-primary border-2 border-transparent transition-all cursor-pointer block no-underline"
+        >
+          <div className="text-3xl mb-2">💝</div>
+          <div className="text-elder-base font-bold text-gray-800">记心情</div>
+          <div className="text-elder-sm text-elder-muted mt-1">关注情绪变化</div>
+        </Link>
+        <Link
+          href="/kb"
+          className="card-elder text-center py-5 hover:shadow-lg hover:border-elder-primary border-2 border-transparent transition-all cursor-pointer block no-underline"
+        >
+          <div className="text-3xl mb-2">📚</div>
+          <div className="text-elder-base font-bold text-gray-800">知识库</div>
+          <div className="text-elder-sm text-elder-muted mt-1">搜索我的笔记</div>
+        </Link>
       </div>
 
       {/* Tab 切换 */}
@@ -77,7 +105,6 @@ export default function Home() {
         <button
           className="btn-elder-danger text-elder-lg px-12 py-5 rounded-full emergency-pulse"
           onClick={() => {
-            // 模拟紧急求助
             alert("紧急求助已触发！\n\n系统将立即通知您的紧急联系人。\n\n如果情况紧急，请同时拨打 120。");
           }}
         >
