@@ -2,8 +2,7 @@
 
 > **Agent + MCP + 双 RAG 引擎** · 适老化智能生活助手  
 > 让老年人用「说话 + 拍照」完成数字生活的所有事  
-> **v2.0**：合并 my-wiki 个人知识库与日记心情系统  
-> 项目路径：`D:\study\competiton\goai-世界人工智能开源大赛\silver-guardian-v2`
+> **v2.0**：合并 llm-wiki 个人知识库与日记心情系统  
 
 ---
 
@@ -11,7 +10,7 @@
 
 **银发守护** 是一个面向老年人的多智能体（Multi-Agent）智能助手系统，核心理念是**"说话就能办事，拍照就能看懂"**。老年用户不需要学习复杂的 App 操作，只需像跟人聊天一样说出需求（"今天要下雨吗？""这盒药怎么吃？""帮我记一下明天去医院"），系统背后的 5 个 AI Agent 会自动分工协作，完成天气查询、药品识别、提醒设置、紧急通知，甚至帮忙写日记和感知情绪。
 
-v2.0 合并了开源个人知识库系统 **my-wiki**，将它的日记、心情分析、语音声学识别和 BM25 语义检索引擎完整纳入，使银发守护从一个"办事工具"升级为"会记日记、懂你心情的 AI 陪伴"。
+v2.0 合并了开源个人知识库系统 **llm-wiki**，将它的日记、心情分析、语音声学识别和 BM25 语义检索引擎完整纳入，使银发守护从一个"办事工具"升级为"会记日记、懂你心情的 AI 陪伴"。
 
 ### 解决的核心痛点
 
@@ -50,8 +49,8 @@ v2.0 合并了开源个人知识库系统 **my-wiki**，将它的日记、心情
     ├─ 🏥 健康顾问 Agent     →  "阿莫西林怎么吃？"
     ├─ 🚨 紧急响应 Agent     →  "我头晕站不稳……"
     ├─ 📔 日记心情 Agent 🆕  →  "今天好开心，帮我记下来"
-    ├─ 👋 问候闲聊           →  "小银你好！"
-    └─ ❓ 兜底处理           →  不明确的请求，友好引导
+    ├─ 👋 问候闲聊 Agent     →  "小银你好！"
+    └─ ❓ 兜底处理 Agent     →  不明确的请求，友好引导
 ```
 
 ### 2.2 功能详情
@@ -78,7 +77,7 @@ v2.0 合并了开源个人知识库系统 **my-wiki**，将它的日记、心情
 
 触发关键词（头晕 / 站不稳 / 摔倒 / 好痛等）→ 自动评估紧急程度 → 通知紧急联系人。所有回复附带**二次确认**防止误操作。
 
-#### 📔 日记心情 🆕（来自 my-wiki）
+#### 📔 日记心情 🆕（来自 llm-wiki）
 
 | 能力 | 说明 |
 |------|------|
@@ -90,7 +89,7 @@ v2.0 合并了开源个人知识库系统 **my-wiki**，将它的日记、心情
 | **文本情绪分析** | 关键词匹配自动识别文字中的情绪 |
 | **语音心情分析** | 🎙️ 从录音中提取 5 维声学特征，辅助判断真实情绪 |
 
-#### 🎙️ 语音心情分析引擎（来自 my-wiki）
+#### 🎙️ 语音心情分析引擎（来自 llm-wiki）
 
 纯 Python 标准库实现（wave + struct + math），**零额外依赖**。从 PCM WAV 录音中提取：
 
@@ -109,7 +108,7 @@ v2.0 合并了开源个人知识库系统 **my-wiki**，将它的日记、心情
 | 引擎 | 技术 | 用途 | 来源 |
 |------|------|------|------|
 | **HealthKB** | ChromaDB + dense embedding | 药品用法、健康科普 | Silver-Guardian 种子数据 |
-| **PersonalKB** 🆕 | BM25 稀疏检索（纯 Python） | 个人笔记语义搜索 | my-wiki brain/ |
+| **PersonalKB** 🆕 | BM25 稀疏检索（纯 Python） | 个人笔记语义搜索 | llm-wiki brain/ |
 
 BM25 引擎特点：
 - 中文采用**字符级 bigram**分词（无需词典）
@@ -149,7 +148,7 @@ silver-guardian-v2/                     # ← 项目根目录
 │   │   │
 │   │   ├── rag/                        # ★ 双 RAG 引擎
 │   │   │   ├── __init__.py             # UnifiedRAG 统一入口
-│   │   │   ├── personal_kb.py          # 🆕 my-wiki BM25 引擎
+│   │   │   ├── personal_kb.py          # 🆕 llm-wiki BM25 引擎
 │   │   │   └── tag_extractor.py        # 🆕 标签提取
 │   │   │
 │   │   ├── voice/                      # 🆕 语音心情分析
@@ -221,15 +220,15 @@ silver-guardian-v2/                     # ← 项目根目录
 | `GET` | `/` | 根路由，返回项目信息 | — |
 | `GET` | `/api/v1/health` | 健康检查（双 RAG 状态） | SG |
 | `POST` | `/api/v1/chat` | 主对话入口（6 种意图） | SG |
-| `POST` | `/api/v1/diary/write` | 🆕 写日记 | my-wiki |
-| `POST` | `/api/v1/diary/read` | 🆕 读日记 | my-wiki |
-| `GET` | `/api/v1/diary/list/{user_id}` | 🆕 日记列表 | my-wiki |
-| `DELETE` | `/api/v1/diary/{user_id}` | 🆕 删除日记 | my-wiki |
-| `POST` | `/api/v1/mood/record` | 🆕 记录心情 | my-wiki |
-| `POST` | `/api/v1/mood/history` | 🆕 心情趋势 | my-wiki |
-| `POST` | `/api/v1/mood/analyze-text` | 🆕 文本情绪分析 | my-wiki |
-| `POST` | `/api/v1/kb/search` | 🆕 个人知识库搜索 | my-wiki |
-| `GET` | `/api/v1/kb/summary` | 🆕 知识库概览 | my-wiki |
+| `POST` | `/api/v1/diary/write` | 🆕 写日记 | llm-wiki |
+| `POST` | `/api/v1/diary/read` | 🆕 读日记 | llm-wiki |
+| `GET` | `/api/v1/diary/list/{user_id}` | 🆕 日记列表 | llm-wiki |
+| `DELETE` | `/api/v1/diary/{user_id}` | 🆕 删除日记 | llm-wiki |
+| `POST` | `/api/v1/mood/record` | 🆕 记录心情 | llm-wiki |
+| `POST` | `/api/v1/mood/history` | 🆕 心情趋势 | llm-wiki |
+| `POST` | `/api/v1/mood/analyze-text` | 🆕 文本情绪分析 | llm-wiki |
+| `POST` | `/api/v1/kb/search` | 🆕 个人知识库搜索 | llm-wiki |
+| `GET` | `/api/v1/kb/summary` | 🆕 知识库概览 | llm-wiki |
 | `GET` | `/api/v1/tools` | MCP 工具列表 | SG |
 | `POST` | `/api/v1/reminder` | 设置提醒 | SG |
 | `GET` | `/api/v1/reminder/{user_id}` | 获取提醒 | SG |
@@ -356,7 +355,7 @@ MYWIKI_OLLAMA_URL=http://localhost:11434
 
 | 版本 | 日期 | 说明 |
 |------|------|------|
-| v2.0 | 2026-07-23 | 🆕 合并 my-wiki：PersonalKB + DiaryAgent + Voice Mood |
+| v2.0 | 2026-07-23 | 🆕 添加 llm-wiki：PersonalKB + DiaryAgent + Voice Mood |
 | v1.0 | 2026-07 | 初版：4 Agent + ChromaDB + Next.js 前端 |
 
 ---
