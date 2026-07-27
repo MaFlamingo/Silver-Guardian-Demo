@@ -1,14 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
-
-interface DiaryEntry {
-  date: string;
-  mood?: string;
-  preview: string;
-}
+import { listDiaries, writeDiary, readDiary, deleteDiary, DiaryEntry } from "@/services/api";
 
 export default function DiaryPage() {
   const [entries, setEntries] = useState<DiaryEntry[]>([]);
@@ -25,8 +18,7 @@ export default function DiaryPage() {
 
   const loadEntries = async () => {
     try {
-      const res = await fetch(`${API_BASE}/diary/list/${userId}`);
-      const data = await res.json();
+      const data = await listDiaries(userId);
       setEntries(data.entries || []);
     } catch (e) {
       console.error("加载日记失败:", e);
@@ -37,12 +29,7 @@ export default function DiaryPage() {
     if (!content.trim()) return;
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE}/diary/write`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content, user_id: userId }),
-      });
-      const data = await res.json();
+      const data = await writeDiary({ user_id: userId, content });
       setMessage(data.success ? "日记已保存 ✅" : "保存失败");
       setContent("");
       loadEntries();
@@ -54,12 +41,7 @@ export default function DiaryPage() {
 
   const handleRead = async (date: string) => {
     try {
-      const res = await fetch(`${API_BASE}/diary/read`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: userId, dt: date }),
-      });
-      const data = await res.json();
+      const data = await readDiary(userId, date);
       setViewing(data.success ? data.data : { content: data.message });
     } catch (e) {
       setViewing({ content: "读取失败" });
@@ -68,7 +50,7 @@ export default function DiaryPage() {
 
   const handleDelete = async (date: string) => {
     try {
-      await fetch(`${API_BASE}/diary/${userId}?dt=${date}`, { method: "DELETE" });
+      await deleteDiary(userId, date);
       setMessage("已删除");
       loadEntries();
     } catch (e) {
